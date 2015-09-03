@@ -30,7 +30,7 @@ Hvis du får feilmeldig ved oppstart, kontroller at "devilry-mode.el" ligger i r
 Det er inkludert funksjonalietet for å automatisk indentere all kode riktig når man begynner å rette en ny oblig, men dette anbefales ikke i inf1000, ettersom studentene trenger trening i å indentere riktig. For å legge til funksjonen: Endre `(setq devilry-indent-code nil)` til `(setq devilry-indent-code t)` øverst i "devilry-mode.el"
 
 ###Automatisk sletting av .classfiler
-Endre ``` elisp (setq devilry-rm-output-files nil)``` til `(setq devilry-rm-output-files t)`
+Endre `(setq devilry-rm-output-files nil)` til `(setq devilry-rm-output-files t)`
 
 ##Virkemåte
 Devilry-mode bruker en feedbackmappe som inneholder én mappe for hver student. Hver gang man gir en tilbakemeldig, blir denne lagret i riktig mappe under navnet "<oblignummer>.txt".
