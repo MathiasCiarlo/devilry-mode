@@ -6,14 +6,15 @@ Foreløpig fungerer det kun for java-obliger (på grunn av kompileringen), med d
 
 
 ##Installering
-1) Last ned devilry-mode.el og legg den i en passende mappe, for eksemel "~/.emacs.d/site-lisp/devilry-mode/"
+1) Last ned devilry-mode.el og legg den i en passende mappe, for eksemel "~/.emacs.d/plugins/devilry-mode/"
 
-2) Legg følgende til i .emacsfilen din for å sørge for at mappen "devilry-mode.el" ligger i blir loadet når emacs starter.
-`
+2) Legg følgende linje i .emacsfilen din for å sørge for at mappen "devilry-mode.el" ligger i blir loadet når emacs starter.
+
+``` elisp
 ;; Devilry-mode
-(add-to-list 'load-path "~/.emacs.d/site-lisp/devilry-mode/")
+(add-to-list 'load-path "~/.emacs.d/plugins/devilry-mode/")
 (require 'devilry-mode)
-`
+```
 Hvis du får feilmeldig ved oppstart, kontroller at "devilry-mode.el" ligger i riktig mappe.
 
 
@@ -26,10 +27,11 @@ Hvis du får feilmeldig ved oppstart, kontroller at "devilry-mode.el" ligger i r
 
 
 ###Automatisk indentering
-Jeg har lagt inn funksjonalietet for å automatisk indentere all kode riktig når man begynner å rette en ny oblig, men dette anbefales ikke i inf1000, ettersom studentene trenger trening i å indentere riktig. For å legge til funksjonen: Endre `(setq devilry-indent-code nil)` ti `(setq devilry-indent-code t)` øverst i "devilry-mode.el"
+Det er inkludert funksjonalietet for å automatisk indentere all kode riktig når man begynner å rette en ny oblig, men dette anbefales ikke i inf1000, ettersom studentene trenger trening i å indentere riktig. For å legge til funksjonen: Endre `(setq devilry-indent-code nil)` ti `(setq devilry-indent-code t)` øverst i "devilry-mode.el"
 
 ###Automatisk sletting av .classfiler
-Endre `(setq devilry-rm-output-files nil)` til `(setq devilry-rm-output-files t)`
+Endre ` elisp (setq devilry-rm-output-files nil)` til ` elisp (setq devilry-rm-output-files t)`
+
 ##Virkemåte
 Devilry-mode bruker en feedbackmappe som inneholder én mappe for hver student. Hver gang man gir en tilbakemeldig, blir denne lagret i riktig mappe under navnet "<oblignummer>.txt".
 Programmet bruker en fil "devilry-mode.data" for å lagre data fra forrige økt. Denne inneholder path til feedbackmappen, path til feedback-templaten og hviket oblignummer man er på. Hvis denne ikke finnes blir den opprettet ved oppstart av modusen.

@@ -170,21 +170,21 @@
 ;; Writes updated data to file
 (defun write-data ()
   ;; Make a directory for the data file if it does not exist
-  (unless (file-exists-p "~/.emacs.d/site-lisp/devilry-mode/")
-    (make-directory "~/.emacs.d/site-lisp/devilry-mode" t))
+  (unless (file-exists-p "~/.emacs.d/plugins/devilry-mode/")
+    (make-directory "~/.emacs.d/plugins/devilry-mode" t))
 
   ;; Construct data-string for file-insertion
   (let ((str (concat feedback-dir-path "\n" feedback-template-path "\n" oblig-number)))
     ;; Write to file
-    (write-region str nil "~/.emacs.d/site-lisp/devilry-mode/devilry-mode.data")
+    (write-region str nil "~/.emacs.d/plugins/devilry-mode/devilry-mode.data")
     (message "Updated data (devilry-mode.data)")))
 
 
 ;; Gets data from file
 (defun read-data ()
   (with-temp-buffer
-    (when (file-exists-p "~/.emacs.d/site-lisp/devilry-mode/devilry-mode.data")
-      (insert-file-contents "~/.emacs.d/site-lisp/devilry-mode/devilry-mode.data")
+    (when (file-exists-p "~/.emacs.d/plugins/devilry-mode/devilry-mode.data")
+      (insert-file-contents "~/.emacs.d/plugins/devilry-mode/devilry-mode.data")
 
       (let ((beg (point))) (end-of-line) (copy-region-as-kill beg (point)))
       (setq feedback-dir-path (car kill-ring-yank-pointer))
@@ -201,7 +201,7 @@
   ;; Check if we need to write to file
   (let ((data-updated nil))
     ;; Check if not file exists
-    (if (not (file-exists-p "~/.emacs.d/site-lisp/devilry-mode/devilry-mode.data"))
+    (if (not (file-exists-p "~/.emacs.d/plugins/devilry-mode/devilry-mode.data"))
         (progn
           (message "Data file \"devilry-mode.data\" does not exist")
           (setq oblig-number (read-string "Oblig number: "))
