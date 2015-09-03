@@ -48,28 +48,27 @@
 ;; Kill everything without saving
 (defun desktop-hard-clear ()
   (interactive)
-  (dolist (buffer (buffer-list))
-    (let ((process (get-buffer-process buffer)))
-      (when process (process-kill-without-query process))
-      (set-buffer buffer)
-      (set-buffer-modified-p nil)
-      (kill-this-buffer)))
-  (delete-other-windows))
+  (when (y-or-n-p (concat "Close all buffers without saving?"))
+    (dolist (buffer (buffer-list))
+      (let ((process (get-buffer-process buffer)))
+	(when process (process-kill-without-query process))
+	(set-buffer buffer)
+	(set-buffer-modified-p nil)
+	(kill-this-buffer)))
+    (delete-other-windows)))
 
 
 ;; Shows readme buffer if it exists
 ;; This is kind of horrible
 (defun devilry-show-readme()
   (interactive)
-  (if (get-buffer "README.txt")
-      (switch-to-buffer "README.txt")
-    (if (get-buffer "Readme.txt")
-        (switch-to-buffer "Readme.txt")
-      (if (get-buffer "readme.txt")
-          (switch-to-buffer "readme.txt")
-        (if (get-buffer "README.TXT")
-            (switch-to-buffer "README.TXT")
-          (message "Could not find README.txt"))))))
+  (cond
+   ((get-buffer "README.txt") (switch-to-buffer "README.txt"))
+   ((get-buffer "Readme.txt") (switch-to-buffer "Readme.txt"))
+   ((get-buffer "readme.txt") (switch-to-buffer "readme.txt"))
+   ((get-buffer "README.TXT") (switch-to-buffer "README.TXT"))
+   ((get-buffer "ReadMe.txt") (switch-to-buffer "ReadMe.txt"))
+   (t (message "Could not find README.txt"))))
 
 
 ;; Inserts the template and adds username et end of first line
@@ -86,7 +85,11 @@
 ;; Splits windows and shows the two previous feedback files
 (defun devilry-create-new-and-show-old-feedback()
   ;; Get username
-  (setq username (read-string "Skriv inn brukernavn: "))
+  (let ((tmp (devilry-get-username)))
+    (if (and (not (null tmp)) (yes-or-no-p (concat "Correcting \"" tmp "\" Is this a valid username?")))
+	(setq username tmp)
+      (setq username (read-string "Type the correct username: "))))
+  
 
   ;; Ask until we get a valid username
   (while (not (file-exists-p (concat feedback-dir-path username)))
@@ -241,6 +244,21 @@
     (when data-updated
       (write-data))))
 
+(defun reverse-string (str)
+  (interactive)
+  (apply
+   #'string
+   (reverse (string-to-list str))))
+
+(defun devilry-get-username ()
+  (interactive)
+  (car
+   (split-string
+    (reverse-string
+     (nth 3
+	  (split-string
+	   (reverse-string
+	    (buffer-file-name)) "/"))) " ")))
 
 ;; The mode
 (define-minor-mode devilry-mode
