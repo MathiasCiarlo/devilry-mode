@@ -1,14 +1,14 @@
 #Devilry-mode
 
 ##Om
-Devilry-mode gjør det enklere å rette obliger. Når du begynner å rette en oblig åpnes det automatisk en feedback-template, samt de to forrige tilbakemeldingene til studenten hvis disse finnes. Dette gjør at man kan gi mye bedre tilbakemeldinger ved å se utviklingen til studenten. Deretter vises README.txt hvis den finnes og alle javafiler kompileres, ved kompileringsfeil vises disse.
+Devilry-mode gjør det enklere å rette obliger. Når du begynner å rette en oblig åpnes det automatisk en feedback-template, samt de to forrige tilbakemeldingene til studenten hvis disse finnes. Dette gjør at man enkelt kan se studentens utvilkling og dermed gi bedre tilbakemeldinger. Deretter vises README.txt hvis den finnes og alle javafiler kompileres, ved kompileringsfeil vises disse.
 Foreløpig fungerer det kun for java-obliger (på grunn av kompileringen), med det kan enkelt endres.
 
 
 ##Installering
-1) Last ned devilry-mode.el og legg den i en passende mappe, for eksemel "~/.emacs.d/plugins/devilry-mode/"
+1) Last ned devilry-mode.el og legg den i en passende mappe, for eksemel "~/.emacs.d/plugins/devilry-mode/". Det enkleste er å clone repoet fra mappen "~/.emacs.d/plugins/"
 
-2) Legg følgende linje i .emacsfilen din for å sørge for at mappen "devilry-mode.el" ligger i blir loadet når emacs starter.
+2) Legg følgende linje i .emacsfilen din for å sørge for at devvilry-mode.el blir loadet når emacs starter.
 
 ``` elisp
 ;; Devilry-mode
@@ -19,9 +19,10 @@ Hvis du får feilmeldig ved oppstart, kontroller at "devilry-mode.el" ligger i r
 
 
 ##Bruk
-- Skriv `M-x devilry-mode` (alt-x) for å aktivere modusen. Scriptet vil prøve å lese en fil med data fra tidligere økter og eventuelt opprette den.
-- Åpne filene. Det mest effektive er å trekke filene man skal rette over i emacs med musa.
+- Skriv `M-x devilry-mode` (alt-x) for å aktivere modusen. Scriptet vil prøve å finne filen "devilry-mode.data" (data fra tidligere økter) og eventuelt opprette den hvis den ikke fins.
+- Åpne obligfilene til den første studenten. Det mest effektive er å dra filene over i emacs med musa.
 - Trykk f5 (eller skriv "M-x devilry-do-oblig")
+- Skriv inn brukernavnet til studenten
 - Rett obligen!
 - f6 lukker alt du har åpent uten å lagre det, bruk dette før du starter på neste oblig
 
