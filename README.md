@@ -22,7 +22,7 @@ Hvis du får feilmeldig ved oppstart, kontroller at "devilry-mode.el" ligger i r
 - Skriv `M-x devilry-mode` (alt-x) for å aktivere modusen. Scriptet vil prøve å finne filen "devilry-mode.data" (data fra tidligere økter) og eventuelt opprette den hvis den ikke fins.
 - Åpne obligfilene til den første studenten. Det mest effektive er å dra filene over i emacs med musa.
 - Trykk f5 (eller skriv "M-x devilry-do-oblig")
-- Skriv inn brukernavnet til studenten
+- Scriptet finner brukernavnet på en syk måte, kontrollér at det er korrekt
 - Rett obligen!
 - f6 lukker alt du har åpent uten å lagre det, bruk dette før du starter på neste oblig
 
