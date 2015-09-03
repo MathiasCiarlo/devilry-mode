@@ -1,8 +1,22 @@
-;; Change nil to t if you want automatic indentation
+;; Change "nil" to "t" if you have used Gard's python script
+;;  "sort_deliveries.py" on the delivery folder. In other words if your
+;; files are arranged as shown below:
+
+;; -username1_folder
+;; ----Source_file1.java
+;; ----Source_file2.java
+;; ----README.txt
+;; -username2_folder
+;; ----Source_file1.java
+;; ----Source_file2.java
+;; ----README.txt
+(setq devilry-easy-file-system nil)
+
+;; Change "nil" to "t" if you want automatic indentation
 ;;  every time you start correcting an oblig
 (setq devilry-indent-code nil)
 
-;; Change nil to t if you want to delete .class files after compilation
+;; Change "nil" to "t" if you want to delete .class files after compilation
 (setq devilry-rm-output-files nil)
 
 
@@ -51,10 +65,10 @@
   (when (y-or-n-p (concat "Close all buffers without saving?"))
     (dolist (buffer (buffer-list))
       (let ((process (get-buffer-process buffer)))
-	(when process (process-kill-without-query process))
-	(set-buffer buffer)
-	(set-buffer-modified-p nil)
-	(kill-this-buffer)))
+        (when process (process-kill-without-query process))
+        (set-buffer buffer)
+        (set-buffer-modified-p nil)
+        (kill-this-buffer)))
     (delete-other-windows)))
 
 
@@ -84,14 +98,20 @@
 ;; Create a new feedback file in the right folder
 ;; Splits windows and shows the two previous feedback files
 (defun devilry-create-new-and-show-old-feedback()
-  ;; Get username
-  (let ((tmp (devilry-get-username)))
-    (if (and (not (null tmp)) (yes-or-no-p (concat "Correcting \"" tmp "\" Is this a valid username?")))
-	(setq username tmp)
-      (setq username (read-string "Type the correct username: "))))
-  
 
+  ;; Getting username from the the file path of the current buffer
   ;; Ask until we get a valid username
+  (setq username (devilry-get-username))
+  (while (not (yes-or-no-p (concat "Correcting \"" username "\" Is this a valid username?")))
+    (if devilry-easy-file-system
+        (if (yes-or-no-p "The variable \"devilry-easy-file-system\" is currently \"t\", but the files are not organized this way. Change to normal file mode?")
+            (progn
+              (setq devilry-easy-file-system nil)
+              (read-string "File mode changed to normal. Consider to set the variable \"devilry-easy-file-system to \"nil\" in devilry-mode.el")
+              (setq username (devilry-get-username)))
+          (setq username (read-string "Type the correct username: ")))
+      (setq username (read-string "Type the correct username: "))))
+
   (while (not (file-exists-p (concat feedback-dir-path username)))
     (if (yes-or-no-p (concat "Can't find directory " feedback-dir-path username ". Create it?"))
         (make-directory (concat feedback-dir-path username) t)
@@ -165,10 +185,10 @@
 
       ;; Delete output files after compilation. Is set at top of this file
       (when devilry-rm-output-files
-	(message "Deleting output files.")
-	(if (eq system-type 'windows-nt)
-	    (shell-command "del *.class")
-	  (shell-command "rm *.class"))))))
+        (message "Deleting output files.")
+        (if (eq system-type 'windows-nt)
+            (shell-command "del *.class")
+          (shell-command "rm *.class"))))))
 
 ;; Writes updated data to file
 (defun write-data ()
@@ -250,15 +270,20 @@
    #'string
    (reverse (string-to-list str))))
 
+
+;; Fetches username from the path of the current buffer file.
 (defun devilry-get-username ()
   (interactive)
-  (car
-   (split-string
-    (reverse-string
-     (nth 3
-	  (split-string
-	   (reverse-string
-	    (buffer-file-name)) "/"))) " ")))
+  (if devilry-easy-file-system
+      (reverse-string
+       (nth 1
+            (split-string (reverse-string (buffer-file-name)) "/")))
+    (car
+     (split-string
+      (reverse-string
+       (nth 3
+            (split-string
+             (reverse-string (buffer-file-name))  "/"))) " "))))
 
 ;; The mode
 (define-minor-mode devilry-mode

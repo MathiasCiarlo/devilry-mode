@@ -22,10 +22,13 @@ Hvis du får feilmeldig ved oppstart, kontroller at "devilry-mode.el" ligger i r
 - Skriv `M-x devilry-mode` (alt-x) for å aktivere modusen. Scriptet vil prøve å finne filen "devilry-mode.data" (data fra tidligere økter) og eventuelt opprette den hvis den ikke fins.
 - Åpne obligfilene til den første studenten. Det mest effektive er å dra filene over i emacs med musa.
 - Trykk f5 (eller skriv "M-x devilry-do-oblig")
-- Scriptet finner brukernavnet på en syk måte, kontrollér at det er korrekt
+- Scriptet finner brukernavnet på en syk måte, kontrollér at det er korrekt.
 - Rett obligen!
 - f6 lukker alt du har åpent uten å lagre det, bruk dette før du starter på neste oblig
 
+
+###Annet mappesystem enn standard devilry-nedlasting (Anbefales!)
+Gard Inge Rosvold har laget et [pythonscript](https://github.com/gardir/Devilry_sort) som organiserer mappene veldig fint, hvis du har organisert filene slik, må du endre `(setq devilry-easy-file-system nil)` til `(setq devilry-easy-file-system t)`
 
 ###Automatisk indentering
 Det er inkludert funksjonalietet for å automatisk indentere all kode riktig når man begynner å rette en ny oblig, men dette anbefales ikke i inf1000, ettersom studentene trenger trening i å indentere riktig. For å legge til funksjonen: Endre `(setq devilry-indent-code nil)` til `(setq devilry-indent-code t)` øverst i "devilry-mode.el"
