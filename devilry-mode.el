@@ -12,12 +12,20 @@
 ;; ----README.txt
 (setq devilry-easy-file-system nil)
 
-;; Change "nil" to "t" if you want automatic indentation
-;;  every time you start correcting an oblig
-(setq devilry-indent-code nil)
 
+;; Java compilation
+;; Change "t" to "nil" if you don't want java compilation
+(setq devilry-java-compilation t)
+
+;; Deletion of .class files after compilation
+;; (only applicable if devilry-java-compilation is t)
 ;; Change "nil" to "t" if you want to delete .class files after compilation
 (setq devilry-rm-output-files nil)
+
+;; Automatic indentation
+;; Change "nil" to "t" if you want to automatic indet and remove
+;; white space every time you start correcting an oblig
+(setq devilry-indent-code nil)
 
 
 ;; To tidy up a buffer, created by simenheg
@@ -159,29 +167,30 @@
 ;; Try to compile .java files, shows eventual errors in new split window below.
 ;; It is the last modified window or something, tried to hack it. It somehow works
 (defun devilry-compile-all-open-java-files ()
-  (let ((output-window (split-window-below)))
-    ;; Find the first java buffer, switch to it, comiple all from there
-    ;;  to make sure we are in the correct directory
-    (dolist (buf (buffer-list))
-      (let ((buf-name (buffer-name buf)))
-	(when (string= (substring buf-name -5) ".java")
-	  (with-current-buffer buf
-	    (shell-command "javac *.java"))
-	  (return))))
-    
-    (if (not (eq (buffer-size (get-buffer "*Shell Command Output*")) 0))
-        (progn
-          (message "Compilation gave errors.")
-          (with-selected-window output-window (pop-to-buffer-same-window "*Shell Command Output*")))
-      (delete-window output-window)
-      (message "Compilation completed sucessfully.")
-      
-      ;; Delete output files after compilation. Is set at top of this file
-      (when devilry-rm-output-files
-        (message "Deleting output files.")
-        (if (eq system-type 'windows-nt)
-            (shell-command "del *.class")
-          (shell-command "rm *.class"))))))
+  ;; Find the first java buffer, switch to it, comiple all from there
+  ;;  to make sure we are in the correct directory
+  (dolist (buf (buffer-list))
+    (let ((buf-name (buffer-name buf)))
+      (when (string= (substring buf-name -5) ".java")
+        (with-current-buffer buf
+          (shell-command "javac *.java")
+
+          ;; Delete output files after compilation. Is set at top of this file
+          (when devilry-rm-output-files
+            (message "Deleting output files.")
+            (if (eq system-type 'windows-nt)
+                (shell-command "del *.class")
+              (shell-command "rm *.class"))))
+
+        ;; Show eventual errors from compilation in window below
+        (if (> (buffer-size (get-buffer "*Shell Command Output*")) 0)
+	    (let ((output-window (split-window-below)))
+	      (progn
+		(message "Compilation gave errors.")
+		(with-selected-window output-window
+		  (pop-to-buffer-same-window "*Shell Command Output*"))))
+	  (message "Compilation completed sucessfully."))
+        (return)))))
 
 
 ;; Compile all java files
@@ -200,7 +209,9 @@
   ;; Show readme if it exists
   (devilry-show-readme)
 
-  (devilry-compile-all-open-java-files))
+  ;; Compile .java files
+  (when devilry-java-compilation
+    (devilry-compile-all-open-java-files)))
 
 ;; Writes updated data to file
 (defun write-data ()

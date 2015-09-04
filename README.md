@@ -2,7 +2,7 @@
 
 ##Om
 Devilry-mode gjør det enklere å rette obliger. Når du begynner å rette en oblig åpnes det automatisk en feedback-template, samt de to forrige tilbakemeldingene til studenten hvis disse finnes. Dette gjør at man enkelt kan se studentens utvilkling og dermed gi bedre tilbakemeldinger. Deretter vises README.txt hvis den finnes og alle javafiler kompileres, ved kompileringsfeil vises disse.
-Foreløpig fungerer det kun for java-obliger (på grunn av kompileringen), med det kan enkelt endres.
+Default vil programmet prøve å kompilere alle javafiler i mappen, men dette kan deaktiveres, se "Deaktiver javakompilering".
 
 
 ##Installering
@@ -20,6 +20,7 @@ Hvis du får feilmeldig ved oppstart, kontroller at "devilry-mode.el" ligger i r
 
 ##Bruk
 - Skriv `M-x devilry-mode` (alt-x) for å aktivere modusen. Scriptet vil prøve å finne filen "devilry-mode.data" (data fra tidligere økter) og eventuelt opprette den hvis den ikke fins.
+- Første gangen du bruker devilry-mode må du skrive inn path til et feedback-directory. Her lagres alle tilbakemeldingene dine. Skriv inn full path, husk slash på slutten. Eksempel: "~/grl/inf1000/h15/feedback/". Skriv så inn path til en feedback-template, dette er en tekstfil som alle tilbakemeldingene vil bruke som mal. Både mappen og tekstfilen vil opprettes dersom de ikke finnes på angitt path.
 - Åpne obligfilene til den første studenten. Det mest effektive er å dra filene over i emacs med musa.
 - Trykk f5 (eller skriv "M-x devilry-do-oblig")
 - Scriptet finner brukernavnet på en syk måte, kontrollér at det er korrekt.
@@ -29,6 +30,9 @@ Hvis du får feilmeldig ved oppstart, kontroller at "devilry-mode.el" ligger i r
 
 ###Annet mappesystem enn standard devilry-nedlasting (Anbefales!)
 Gard Inge Rosvold har laget et [pythonscript](https://github.com/gardir/Devilry_sort) som organiserer mappene veldig fint, hvis du har organisert filene slik, må du endre `(setq devilry-easy-file-system nil)` til `(setq devilry-easy-file-system t)`
+
+###Deaktiver java-kompilering
+Endre linjen `(setq devilry-java-compilation t)` til `(setq devilry-java-compilation nil)`.
 
 ###Automatisk indentering
 Det er inkludert funksjonalietet for å automatisk indentere all kode riktig når man begynner å rette en ny oblig, men dette anbefales ikke i inf1000, ettersom studentene trenger trening i å indentere riktig. For å legge til funksjonen: Endre `(setq devilry-indent-code nil)` til `(setq devilry-indent-code t)` øverst i "devilry-mode.el"
