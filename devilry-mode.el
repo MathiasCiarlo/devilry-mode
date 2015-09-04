@@ -156,6 +156,34 @@
             (safe-markdown-mode)))))))
 
 
+;; Try to compile .java files, shows eventual errors in new split window below.
+;; It is the last modified window or something, tried to hack it. It somehow works
+(defun devilry-compile-all-open-java-files ()
+  (let ((output-window (split-window-below)))
+    ;; Find the first java buffer, switch to it, comiple all from there
+    ;;  to make sure we are in the correct directory
+    (dolist (buf (buffer-list))
+      (let ((buf-name (buffer-name buf)))
+	(when (string= (substring buf-name -5) ".java")
+	  (with-current-buffer buf
+	    (shell-command "javac *.java"))
+	  (return))))
+    
+    (if (not (eq (buffer-size (get-buffer "*Shell Command Output*")) 0))
+        (progn
+          (message "Compilation gave errors.")
+          (with-selected-window output-window (pop-to-buffer-same-window "*Shell Command Output*")))
+      (delete-window output-window)
+      (message "Compilation completed sucessfully.")
+      
+      ;; Delete output files after compilation. Is set at top of this file
+      (when devilry-rm-output-files
+        (message "Deleting output files.")
+        (if (eq system-type 'windows-nt)
+            (shell-command "del *.class")
+          (shell-command "rm *.class"))))))
+
+
 ;; Compile all java files
 ;; Remove output .class files
 ;; Find README and switch to that buffer
@@ -172,23 +200,7 @@
   ;; Show readme if it exists
   (devilry-show-readme)
 
-  ;; Try to compile, show eventual errors below. Shell command output buffer opens
-  ;;  in last modified window or something, tried to hack it. It somehow works
-  (let ((output-window (split-window-below)))
-    (shell-command "javac *.java")
-    (if (not (eq (buffer-size (get-buffer "*Shell Command Output*")) 0))
-        (progn
-          (message "Compilation gave errors.")
-          (with-selected-window output-window (pop-to-buffer-same-window "*Shell Command Output*")))
-      (delete-window output-window)
-      (message "Compilation completed sucessfully.")
-
-      ;; Delete output files after compilation. Is set at top of this file
-      (when devilry-rm-output-files
-        (message "Deleting output files.")
-        (if (eq system-type 'windows-nt)
-            (shell-command "del *.class")
-          (shell-command "rm *.class"))))))
+  (devilry-compile-all-open-java-files))
 
 ;; Writes updated data to file
 (defun write-data ()
