@@ -20,13 +20,15 @@
 ;; Deletion of .class files after compilation
 ;; (only applicable if devilry-java-compilation is t)
 ;; Change "nil" to "t" if you want to delete .class files after compilation
-(setq devilry-rm-output-files nil)
+(setq devilry-rm-output-files t)
 
 ;; Automatic indentation
 ;; Change "nil" to "t" if you want to automatic indet and remove
 ;; white space every time you start correcting an oblig
 (setq devilry-indent-code nil)
 
+;; Fetching devilry-mode's file location
+(setq devilry-mode-location (file-name-directory load-file-name))
 
 ;; To tidy up a buffer, created by simenheg
 (defun tidy ()
@@ -112,10 +114,12 @@
   (setq username (devilry-get-username))
   (while (not (yes-or-no-p (concat "Correcting \"" username "\" Is this a valid username?")))
     (if devilry-easy-file-system
-        (if (yes-or-no-p "The variable \"devilry-easy-file-system\" is currently \"t\", but the files are not organized this way. Change to normal file mode?")
+        (if (yes-or-no-p "The variable \"devilry-easy-file-system\" is currently \"t\""
+			 "but the files are not organized this way. Change to normal file mode?")
             (progn
               (setq devilry-easy-file-system nil)
-              (read-string "File mode changed to normal. Consider to set the variable \"devilry-easy-file-system to \"nil\" in devilry-mode.el")
+              (read-string "File mode changed to normal. Consider to set the variable \""
+			   "devilry-easy-file-system to \"nil\" in devilry-mode.el")
               (setq username (devilry-get-username)))
           (setq username (read-string "Type the correct username: ")))
       (setq username (read-string "Type the correct username: "))))
@@ -215,22 +219,20 @@
 
 ;; Writes updated data to file
 (defun write-data ()
-  ;; Make a directory for the data file if it does not exist
-  (unless (file-exists-p "~/.emacs.d/plugins/devilry-mode/")
-    (make-directory "~/.emacs.d/plugins/devilry-mode" t))
-
+    
   ;; Construct data-string for file-insertion
   (let ((str (concat feedback-dir-path "\n" feedback-template-path "\n" oblig-number)))
+
     ;; Write to file
-    (write-region str nil "~/.emacs.d/plugins/devilry-mode/devilry-mode.settings")
-    (message "Updated data (devilry-mode.settings)")))
+    (write-region str nil settings-file)
+    (message "Updated data (settings-file)")))
 
 
 ;; Gets data from file
 (defun read-data ()
   (with-temp-buffer
-    (when (file-exists-p "~/.emacs.d/plugins/devilry-mode/devilry-mode.settings")
-      (insert-file-contents "~/.emacs.d/plugins/devilry-mode/devilry-mode.settings")
+    (when (file-exists-p settings-file)
+      (insert-file-contents settings-file)
 
       (let ((beg (point))) (end-of-line) (copy-region-as-kill beg (point)))
       (setq feedback-dir-path (car kill-ring-yank-pointer))
@@ -242,14 +244,15 @@
 
 ;; Initiates the system
 (defun devilry-init ()
+  (setq settings-file (concat devilry-mode-location "devilry-mode.settings"))
   (read-data)
 
   ;; Check if we need to write to file
   (let ((data-updated nil))
     ;; Check if not file exists
-    (if (not (file-exists-p "~/.emacs.d/plugins/devilry-mode/devilry-mode.settings"))
+    (if (not (file-exists-p settings-file))
         (progn
-          (message "Data file \"devilry-mode.settings\" does not exist")
+          (message "Data file \"%s\" does not exist" settings-file)
           (setq oblig-number (read-string "Oblig number: "))
           (setq feedback-dir-path (read-string "Path to feedback directory: "))
           (setq feedback-template-path (read-string "Path to feedback template: "))
@@ -280,7 +283,10 @@
             ;; Creating feedback file, making sure the parent directories exist
             (let ((dir (file-name-directory feedback-template-path)))
               (unless (file-exists-p dir) (make-directory dir t)))
-            (write-region (concat "#<course code> - Oblig " oblig-number "\n##<task1>\n##<task2>\n...\n##Generally:\n\n\n###**Approved**") nil feedback-template-path))
+            (write-region (concat "# INF1000 - Assignment " oblig-number "\n"
+				  "## Exercise 1\n## Exercise 2\n## Exercise 3\n\n"
+				  "## Generally:\n\n\n### **Approved**")
+			  nil feedback-template-path))
         (setq feedback-template-path (read-string "Path to feedback directory: "))))
 
     ;; If we have new varables or could not find data we have to write to file
