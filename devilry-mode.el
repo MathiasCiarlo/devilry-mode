@@ -34,8 +34,7 @@
 ;; Activating markdown-mode if installed
 (defun safe-markdown-mode()
   (when (require 'markdown-mode nil 'noerror)
-                                        ;(markdown-mode)
-    ))
+    (markdown-mode)))
 
 ;; Kill everything without saving
 (defun desktop-hard-clear ()
