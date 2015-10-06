@@ -20,12 +20,12 @@ Hvis du får feilmeldig ved oppstart, kontroller at "devilry-mode.el" ligger i r
 
 ##Enkel bruk
 - Skriv `M-x devilry-mode` (alt-x) for å aktivere modusen. Scriptet vil prøve å finne filen "devilry-mode.data" (data fra tidligere økter) og eventuelt opprette den hvis den ikke fins.
-- Første gangen du bruker devilry-mode må du skrive inn path til et feedback-directory. Her lagres alle tilbakemeldingene dine. Skriv inn full path, husk slash på slutten. Eksempel: "~/grl/inf1000/h15/feedback/". Skriv så inn path til en feedback-template, dette er en tekstfil som alle tilbakemeldingene vil bruke som mal. Både mappen og tekstfilen vil opprettes dersom de ikke finnes på angitt path.
+- Første gangen du bruker devilry-mode må du skrive inn path til et feedback-directory. Her lagres alle tilbakemeldingene dine. Skriv inn pathen. Eksempel: "~/grl/inf1000/h15/feedback/". Skriv så inn path til en feedback-template, dette er en tekstfil som alle tilbakemeldingene vil bruke som mal. Både mappen og tekstfilen vil opprettes dersom de ikke finnes på angitte pather.
 - Åpne obligfilene til den første studenten. Det mest effektive er å dra filene over i emacs med musa.
 - Trykk f5 (eller skriv "M-x devilry-do-oblig")
 - Scriptet finner brukernavnet på en syk måte, kontrollér at det er korrekt.
 - Rett obligen!
-- f6 lukker alt du har åpent uten å lagre det, bruk dette før du starter på neste oblig
+- f6 lukker alt du har åpent uten å lagre det, bruk dette før du starter på neste oblig.
 
 ##Virkemåte
 Devilry-mode bruker en feedbackmappe som inneholder én mappe for hver student. Hver gang man gir en tilbakemeldig, blir denne lagret i riktig mappe under navnet "<oblignummer>.txt".
