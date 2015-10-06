@@ -2,8 +2,6 @@
 
 ;; To tidy up a buffer, created by simenheg
 (defun tidy ()
-  "Ident, untabify and unwhitespacify current buffer, or region if active."
-  (interactive)
   (let ((beg (if (region-active-p) (region-beginning) (point-min)))
         (end (if (region-active-p) (region-end) (point-max))))
     (indent-region beg end)
@@ -12,7 +10,7 @@
 
 
 ;; Yank inside devilry-markdown code block
-(defun devilry-yank-java-block()
+(defun dm-yank-java-block()
   (interactive)
   (insert "``` java")
   (newline)(yank)(newline)
@@ -20,8 +18,7 @@
 
 
 ;; Smart for getting stuff on devilry, but not on disk
-(defun devilry-add-old-feedback()
-  (interactive)
+(defun dm-add-old-feedback()
   (save-buffer)
   (kill-buffer)
   ;; Get username and create feedback-file
@@ -37,7 +34,8 @@
 ;; Activating markdown-mode if installed
 (defun safe-markdown-mode()
   (when (require 'markdown-mode nil 'noerror)
-    (markdown-mode)))
+                                        ;(markdown-mode)
+    ))
 
 ;; Kill everything without saving
 (defun desktop-hard-clear ()
@@ -54,8 +52,7 @@
 
 ;; Shows readme buffer if it exists
 ;; This is kind of horrible
-(defun devilry-show-readme()
-  (interactive)
+(defun dm-show-readme()
   (cond
    ((get-buffer "README.txt") (switch-to-buffer "README.txt"))
    ((get-buffer "Readme.txt") (switch-to-buffer "Readme.txt"))
@@ -66,22 +63,23 @@
 
 
 ;; Inserts the template and adds username et end of first line
-(defun insert-devilry-template (username file-path)
+(defun dm-insert-template (username file-path)
   (insert-file-contents file-path)
   (move-end-of-line nil)
   (insert " - " username)
   (end-of-buffer)
-  (insert (concat "\nCorrected: " (current-time-string))
-          (move-beginning-of-line nil)))
+  (insert (concat "\nCorrected: " (current-time-string)))
+  (beginning-of-buffer))
 
 
 ;; Create a new feedback file in the right folder
-;; Splits windows and shows the two previous feedback files
-(defun devilry-create-new-and-show-old-feedback()
+;; Splits windows and shows the previous feedback file
+;; Opens all previous feedback files, but don't show them
+(defun dm-create-new-and-show-old-feedback()
 
   ;; Getting username from the the file path of the current buffer
   ;; Ask until we get a valid username
-  (setq username (devilry-get-username))
+  (setq username (dm-get-username))
   (while (not (yes-or-no-p (concat "Correcting \"" username "\" Is this a valid username?")))
     (if dm-easy-file-system
         (if (yes-or-no-p "The variable \"easy-file-system\" is currently \"t\""
@@ -90,7 +88,7 @@
               (setq dm-easy-file-system nil)
               (read-string "File mode changed to normal. Consider to set the variable \""
                            "easy-file-system to \"nil\" in devilry-mode.settings")
-              (setq username (devilry-get-username)))
+              (setq username (dm-get-username)))
           (setq username (read-string "Type the correct username: ")))
       (setq username (read-string "Type the correct username: "))))
 
@@ -101,53 +99,52 @@
                       (concat "Please give a valid username. (Must be a folder in path "
                               dm-feedback-dir-path "): ")))))
 
-  ;; Calculate paths to new and the two previous feedback files
-  (setq newFilePath (concat dm-feedback-dir-path username "/" dm-assignment-number ".txt"))
-  (setq prevFilePath (concat dm-feedback-dir-path username "/"
-                             (number-to-string (- (string-to-number dm-assignment-number) 1)) ".txt"))
-  (setq oldFilePath (concat dm-feedback-dir-path username "/"
-                            (number-to-string (- (string-to-number dm-assignment-number) 2)) ".txt"))
+  ;; Calculate path to new and previous feedback file
+  (let* ((user-feedback-dir (concat dm-feedback-dir-path username "/"))
+         (newFilePath (concat user-feedback-dir dm-assignment-number ".txt"))
+         (prevFilePath (concat user-feedback-dir "/"
+                               (number-to-string (- (string-to-number dm-assignment-number) 1)) ".txt")))
 
-  ;; Create new feedback-file or open it if it exists
-  (find-file newFilePath)
+    ;; Split screen to open feedback files on the right
+    (with-selected-window (split-window-right)
 
-  (with-selected-window (split-window-right)
-    (find-file newFilePath)
+      ;; Open all feedback files in the background
+      (dolist (file (directory-files user-feedback-dir t))
+        (unless (file-directory-p file)
+          (find-file-read-only file)))
 
-    ;; Check if we have been editing this feedback file before
-    (when (eq (buffer-size) 0)
-      (insert-devilry-template username dm-feedback-template-path))
+      ;; Create new feedback-file or open it if it exists
+      (find-file newFilePath)
+      (setq buffer-read-only nil)
 
-    (safe-markdown-mode)
+      ;; Check if we have been editing this feedback file before
+      (when (eq (buffer-size) 0)
+        (dm-insert-template username dm-feedback-template-path))
 
-    ;; Split window again if old feedback-file exists
-    (when (file-exists-p prevFilePath)
-      (with-selected-window (split-window-below)
-        (find-file-read-only prevFilePath)
-        (end-of-buffer)
+      ;; Activate markdown-mode if installed
+      (safe-markdown-mode)
 
-        ;; Activating markdown-mode
-        (safe-markdown-mode)
+      ;; Split window again if old feedback-file exists
+      (when (file-exists-p prevFilePath)
+        (with-selected-window (split-window-below)
+          (find-file prevFilePath)
+          (end-of-buffer)
 
-        (when (file-exists-p oldFilePath)
-          (with-selected-window (split-window-below)
-            (find-file-read-only oldFilePath)
-            (end-of-buffer)
-
-            ;; Activating markdown-mode
-            (safe-markdown-mode)))))))
+          ;; Activating markdown-mode
+          (safe-markdown-mode))))))
 
 
 ;; Try to compile .java files, shows eventual errors in new split window below.
 ;; It is the last modified window or something, tried to hack it. It somehow works
-(defun devilry-compile-all-open-java-files ()
+(defun dm-compile-all-open-java-files ()
+
   ;; Find the first java buffer, switch to it, compile all from there
   ;;  to make sure we are in the correct directory
   (dolist (buf (buffer-list))
     (let ((buf-name (buffer-name buf)))
       (when (string= (substring buf-name -5) ".java")
         (with-current-buffer buf
-          (shell-command "javac -encoding UTF-8 *.java")
+          (shell-command "javac *.java")
 
           ;; Delete .class files after compilation.
           (when dm-rm-class-files
@@ -170,7 +167,7 @@
 ;; Compile all java files
 ;; Remove output .class files
 ;; Find README and switch to that buffer
-(defun devilry-do-oblig ()
+(defun dm-do-oblig ()
   (interactive)
   (delete-other-windows)
 
@@ -178,36 +175,35 @@
   (when dm-auto-indentation (tidy-all-buffers))
 
   ;; Create new and show previous feedback files on the right
-  (devilry-create-new-and-show-old-feedback)
+  (dm-create-new-and-show-old-feedback)
 
   ;; Show readme if it exists
-  (devilry-show-readme)
+  (dm-show-readme)
 
   ;; Compile .java files
   (when dm-java-compilation
-    (devilry-compile-all-open-java-files)))
+    (dm-compile-all-open-java-files)))
 
 ;; Writes updated data to file
 (defun write-settings-file (file-path)
-  
   ;; Construct data-string for file-insertion
   (let ((str (concat
-	      "feedback-dir-path "       dm-feedback-dir-path                "\n"
-	      "feedback-template-path "  dm-feedback-template-path           "\n"
-	      "assignment-number "       dm-assignment-number                "\n"
-	      "easy-file-system "          (symbol-name dm-easy-file-system) "\n"
-	      "rm-class-files "          (symbol-name dm-rm-class-files)     "\n"
-	      "java-compilation "        (symbol-name dm-java-compilation)   "\n"
-	      "auto-indentation "        (symbol-name dm-auto-indentation)
-	      )))
+              "feedback-dir-path "       dm-feedback-dir-path             "\n"
+              "feedback-template-path "  dm-feedback-template-path        "\n"
+              "assignment-number "       dm-assignment-number             "\n"
+              "easy-file-system "        (symbol-name dm-easy-file-system) "\n"
+              "rm-class-files "          (symbol-name dm-rm-class-files)   "\n"
+              "java-compilation "        (symbol-name dm-java-compilation) "\n"
+              "auto-indentation "        (symbol-name dm-auto-indentation)
+              )))
 
     ;; Write to file
     (write-region str nil file-path)
-    (message "Updated settings (devilry-mode.settings)")))
+    (message "Updated settings file (devilry-mode.settings)")))
 
 
 ;; Get data from settings file
-(defun read-settings-file (file-path)
+(defun dm-read-settings-file (file-path)
 
   ;; List of accepted keywords
   (let ((keywords (list "feedback-dir-path"
@@ -230,7 +226,7 @@
      dm-auto-indentation          nil
      )
 
-    ;; Read settings file and fill the associtation list
+    ;; Read settings file and set variables
     (with-temp-buffer
       (when (file-exists-p file-path)
         (insert-file-contents file-path)
@@ -242,88 +238,95 @@
                         (point-max))
                        "\n" t))
 
+          ;; Split line on space, set keyword to  first,
           (let ((keyword (car (split-string line " ")))
-                (setting (cadr (split-string line " "))))
-	    (message "Keyword %s, setting %s" keyword setting)
+                (value (reduce (lambda (x y) (concat x " " y))
+                               (cdr (split-string line " ")))))
             (if (not (member keyword keywords))
                 (message "ERROR: The keyword %s in the settings file is not a valid keyword." keyword)
-              (if (null setting)
-                  (message "ERROR: The setting %s in the settings file has no value." keyword)
+              (if (null value)
+                  (message "ERROR: The keyword %s in the settings file has no value." keyword)
 
                 ;; Set the correct variable to t, nil or a string
-		(message "Sat %s to %s" (intern (concat "dm-" keyword)) setting)
+                (message "Sat %s to %s" (intern (concat "dm-" keyword)) value)
                 (set (intern (concat "dm-" keyword))
-                     (cond ((string-equal setting "t") t)
-                           ((string-equal setting "nil") nil)
-                           (t setting)))))))))))
+                     (cond ((string-equal value "t") t)
+                           ((string-equal value "nil") nil)
+                           (t value)))))))))))
 
 
 ;; Initiates the system
-(defun devilry-init ()
+(defun dm-init ()
   (let ((settings-file (concat dm-source-dir "devilry-mode.settings")))
-    (message "%s" settings-file)
-    (read-settings-file settings-file)
-    
+    (dm-read-settings-file settings-file)
+
     ;; Check if we need to write to file
     (let ((data-updated nil))
-      
+
       ;; Check if not file exists
       (if (not (file-exists-p settings-file))
-	  (progn
-	    (setq dm-assignment-number (read-string (concat "Data file " settings-file " does not exist\n"
-							    "Assignment number: ")))
-	    (setq dm-feedback-dir-path
-		  (read-directory-name "Path to feedback directory: "))
-	    (setq dm-feedback-template-path
-		  (read-file-name "Path to feedback template: "))
-	    (setq data-updated t))
+          (progn
+            (setq dm-assignment-number
+                  (read-string (concat "Settings file " settings-file " does not exist, creating it now:\n"
+                                       "Assignment number: ")))
+            (setq dm-feedback-dir-path
+                  (read-directory-name "Path to feedback directory: "))
+            (setq dm-feedback-template-path
+                  (read-file-name "Path to feedback template: "))
+            (setq data-updated t))
 
-	;; Check if user wants to update data
-	(when (y-or-n-p (concat "Change assignment number? (is " dm-assignment-number ") "))
-	  (setq dm-assignment-number (read-string "Assignment number: "))
-	  (setq data-updated t))
+        ;; Check if user wants to update data
+        (when (y-or-n-p (concat "Change assignment number? (is " dm-assignment-number ") "))
+          (setq dm-assignment-number (read-string "Assignment number: "))
+          (setq data-updated t))
 
-	(when (y-or-n-p (concat "Change feedback directory? (is " dm-feedback-dir-path ") "))
-	  (setq dm-feedback-dir-path (read-directory-name "Path to feedback directory: "))
-	  (setq data-updated t))
+        (when (y-or-n-p (concat "Change feedback directory? (is " dm-feedback-dir-path ") "))
+          (setq dm-feedback-dir-path (read-directory-name "Path to feedback directory: "))
+          (setq data-updated t))
 
-	(when (y-or-n-p (concat "Change feedback template path? (is " dm-feedback-template-path ") "))
-	  (setq dm-feedback-template-path (read-file-name "Path to feedback template: "))
-	  (setq data-updated t)))
+        (when (y-or-n-p (concat "Change feedback template path? (is " dm-feedback-template-path ") "))
+          (setq dm-feedback-template-path (read-file-name "Path to feedback template: "))
+          (setq data-updated t)))
 
       ;; Check if the paths are valid, if not, ask to create directories
       (while (not (file-exists-p dm-feedback-dir-path))
-	(if (yes-or-no-p (concat "Feedback directory does not exist (" dm-feedback-dir-path "). Create it? "))
-	    (make-directory dm-feedback-dir-path t)
-	  (setq dm-feedback-dir-path (read-directory-name "Path to feedback directory: "))))
+        (if (yes-or-no-p (concat "Feedback directory does not exist (" dm-feedback-dir-path "). Create it? "))
+            (make-directory dm-feedback-dir-path t)
+          (setq dm-feedback-dir-path (read-directory-name "Path to feedback directory: "))))
 
       (while (not (file-exists-p dm-feedback-template-path))
-	(if (yes-or-no-p (concat "Feedback template does not exist (" dm-feedback-template-path "). Create it? "))
-	    (progn
-	      ;; Creating feedback file, making sure the parent directories exist
-	      (let ((parent-dir (file-name-directory dm-feedback-template-path)))
-		(unless (file-exists-p parent-dir)
-		  (make-directory parent-dir t)))
-	      (write-region (concat "# INF1000 - Assignment " dm-assignment-number "\n"
-				    "## Exercise 1\n## Exercise 2\n## Exercise 3\n\n"
-				    "## Generally:\n\n\n### **Approved**")
-			    nil dm-feedback-template-path))
-	  (setq dm-feedback-template-path (read-file-name "Path to feedback template: "))))
+        (if (yes-or-no-p (concat "Feedback template does not exist (" dm-feedback-template-path "). Create it? "))
+            (progn
+              ;; Creating feedback file, making sure the parent directories exist
+              (let ((parent-dir (file-name-directory dm-feedback-template-path)))
+                (unless (file-exists-p parent-dir)
+                  (make-directory parent-dir t)))
+              (write-region (concat "# INF1000 - Assignment " dm-assignment-number "\n"
+                                    "## Exercise 1\n## Exercise 2\n## Exercise 3\n\n"
+                                    "## Generally:\n\n\n### **Approved**")
+                            nil dm-feedback-template-path))
+          (setq dm-feedback-template-path (read-file-name "Path to feedback template: "))))
 
       ;; If we have new varables or could not find data we have to write to file
       (when data-updated
-	(write-settings-file settings-file)))))
+        (write-settings-file settings-file)))))
 
+;; Self explanatory
 (defun reverse-string (str)
-  (interactive)
   (apply
-   #'string
+   'string
    (reverse (string-to-list str))))
 
 
+;; Get rest of list from position n
+(defun sublist (cnt lst)
+  (cond ((null lst) '())
+        ((< cnt 1) lst)
+        (t (sublist (- cnt 1) (cdr lst)))))
+
+
 ;; Fetches username from the path of the current buffer file.
-(defun devilry-get-username ()
-  (interactive)
+(defun dm-get-username ()
   (if dm-easy-file-system
       (reverse-string
        (nth 1
@@ -342,13 +345,13 @@
   :global t
   :init-value nil
   :keymap (let ((map (make-sparse-keymap)))
-            (define-key map (kbd "<f5>") 'devilry-do-oblig)
+            (define-key map (kbd "<f5>") 'dm-do-oblig)
             (define-key map (kbd "<f6>") 'desktop-hard-clear)
-            (define-key map (kbd "C-, y") 'devilry-yank-java-block)
+            (define-key map (kbd "C-, y") 'dm-yank-java-block)
             map)
   ;; This will be run every time the mode is toggled on or off
   ;; If we toggled the mode on, run init function
   (when (and devilry-mode (boundp 'devilry-mode))
-    (devilry-init)))
+    (dm-init)))
 
 (provide 'devilry-mode)
