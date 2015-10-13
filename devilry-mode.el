@@ -17,20 +17,6 @@
   (insert "```")(newline))
 
 
-;; Smart for getting stuff on devilry, but not on disk
-(defun dm-add-old-feedback()
-  (save-buffer)
-  (kill-buffer)
-  ;; Get username and create feedback-file
-  (setq username (read-string "Skriv inn brukernavn: "))
-  ;; Ask for a real username
-  (while (string= username "")
-    (setq username (read-string "Skriv inn et ordentlig brukernavn: ")))
-
-  ;; Open the file in the new window
-  (find-file (concat dm-feedback-dir-path username "/<assignmentnr>.txt")))
-
-
 ;; Activating markdown-mode if installed
 (defun safe-markdown-mode()
   (when (require 'markdown-mode nil 'noerror)
@@ -326,16 +312,22 @@
 
 ;; Fetches username from the path of the current buffer file.
 (defun dm-get-username ()
-  (if dm-easy-file-system
-      (reverse-string
-       (nth 1
-            (split-string (reverse-string (buffer-file-name)) "/")))
-    (car
-     (split-string
-      (reverse-string
-       (nth 3
-            (split-string
-             (reverse-string (buffer-file-name))  "/"))) " "))))
+
+  ;; Support for windows backslash instead of slash.
+  (let ((system-file-separator
+	 (if (eq system-type 'windows-nt)
+	     (string ?\\)
+	   "/")))
+    (if dm-easy-file-system
+	(reverse-string
+	 (nth 1
+	      (split-string (reverse-string (buffer-file-name)) system-file-separator)))
+      (car
+       (split-string
+	(reverse-string
+	 (nth 3
+	      (split-string
+	       (reverse-string (buffer-file-name))  system-file-separator))) " ")))))
 
 ;; The mode
 (define-minor-mode devilry-mode
