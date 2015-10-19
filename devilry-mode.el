@@ -38,13 +38,10 @@
 ;; Shows readme buffer if it exists
 ;; This is kind of horrible
 (defun dm-show-readme()
-  (cond
-   ((get-buffer "README.txt") (switch-to-buffer "README.txt"))
-   ((get-buffer "Readme.txt") (switch-to-buffer "Readme.txt"))
-   ((get-buffer "readme.txt") (switch-to-buffer "readme.txt"))
-   ((get-buffer "README.TXT") (switch-to-buffer "README.TXT"))
-   ((get-buffer "ReadMe.txt") (switch-to-buffer "ReadMe.txt"))
-   (t (message "Could not find README.txt"))))
+  (dolist (buf (buffer-list))
+    (if (string= (downcase (buffer-name)) "readme.txt")
+	(switch-to-buffer buf))
+    (return)))
 
 
 ;; Inserts the template and adds username et end of first line
