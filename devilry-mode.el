@@ -39,9 +39,9 @@
 ;; This is kind of horrible
 (defun dm-show-readme()
   (dolist (buf (buffer-list))
-    (if (string= (downcase (buffer-name)) "readme.txt")
-	(switch-to-buffer buf))
-    (return)))
+    (when (string= (downcase (buffer-name)) "readme.txt")
+      (switch-to-buffer buf)
+      (return))))
 
 
 ;; Inserts the template and adds username et end of first line
