@@ -75,11 +75,11 @@
       (setq username (read-string "Type the correct username: "))))
 
   (while (not (file-exists-p (concat dm-feedback-dir-path username)))
-    (if (yes-or-no-p (concat "Can't find directory " dm-feedback-dir-path username ". Create it?"))
+    (if (yes-or-no-p (concat "Can't find directory \"" dm-feedback-dir-path username "\". Create it?"))
         (make-directory (concat dm-feedback-dir-path username) t)
       (setq username (read-string
-                      (concat "Please give a valid username. (Must be a folder in path "
-                              dm-feedback-dir-path "): ")))))
+                      (concat "Please give a valid username. (Must be a folder in path \""
+                              dm-feedback-dir-path "\"): ")))))
 
   ;; Calculate path to new and previous feedback file
   (let* ((user-feedback-dir (concat dm-feedback-dir-path username "/"))
