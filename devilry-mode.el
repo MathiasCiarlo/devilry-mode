@@ -39,7 +39,7 @@
 ;; This is kind of horrible
 (defun dm-show-readme()
   (dolist (buf (buffer-list))
-    (when (string= (downcase (buffer-name)) "readme.txt")
+    (when (string= (downcase (buffer-name buf)) "readme.txt")
       (switch-to-buffer buf)
       (return))))
 
