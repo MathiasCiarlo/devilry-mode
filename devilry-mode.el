@@ -113,7 +113,10 @@
           (end-of-buffer)
 
           ;; Activating markdown-mode
-          (safe-markdown-mode))))))
+          (safe-markdown-mode)))
+
+      ;; Activate visual-line-mode to make sure text wrap is good
+      (visual-line-mode))))
 
 
 ;; Try to compile .java files, shows eventual errors in new split window below.
