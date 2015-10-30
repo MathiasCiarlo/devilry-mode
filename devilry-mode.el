@@ -131,21 +131,21 @@
         (with-current-buffer buf
           (shell-command "javac *.java")
 
-          ;; Delete .class files after compilation.
-          (when dm-rm-class-files
-            (message "Deleting class files.")
-            (if (eq system-type 'windows-nt)
-                (shell-command "del *.class")
-              (shell-command "rm *.class"))))
+	  ;; Show eventual errors from compilation in window below
+	  (if (> (buffer-size (get-buffer "*Shell Command Output*")) 0)
+	      (let ((output-window (split-window-below)))
+		(message "Compilation gave errors.")
 
-        ;; Show eventual errors from compilation in window below
-        (if (> (buffer-size (get-buffer "*Shell Command Output*")) 0)
-            (let ((output-window (split-window-below)))
-              (progn
-                (message "Compilation gave errors.")
-                (with-selected-window output-window
-                  (pop-to-buffer-same-window "*Shell Command Output*"))))
-          (message "Compilation completed sucessfully."))
+		(with-selected-window output-window
+		  (pop-to-buffer-same-window "*Shell Command Output*")))
+
+	    ;; If compilation completed delete .class files
+	    (when dm-rm-class-files
+	      (message "Deleting class files.")
+	      (if (eq system-type 'windows-nt)
+		  (shell-command "del *.class")
+		(shell-command "rm *.class")))
+	    (message "Compilation completed sucessfully.")))
         (return)))))
 
 
