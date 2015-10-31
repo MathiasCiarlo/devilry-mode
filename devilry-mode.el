@@ -8,6 +8,13 @@
     (whitespace-cleanup)
     (untabify beg (if (< end (point-max)) end (point-max)))))
 
+;; Tidy all buffers that are not read-only
+(defun tidy-all-buffers()
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (switch-to-buffer buffer) ; this is probably not necessary
+      (when (eq buffer-read-only nil)
+        (tidy)))))
 
 ;; Yank inside devilry-markdown code block
 (defun dm-yank-java-block()
