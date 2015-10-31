@@ -93,7 +93,8 @@
       ;; Open all feedback files in the background
       (dolist (file (directory-files user-feedback-dir t))
         (unless (file-directory-p file)
-          (find-file-read-only file)))
+          (find-file-read-only file)
+	  (visual-line-mode)))
 
       ;; Create new feedback-file or open it if it exists
       (find-file newFilePath)
@@ -110,6 +111,7 @@
       (when (file-exists-p prevFilePath)
         (with-selected-window (split-window-below)
           (find-file prevFilePath)
+	  (visual-line-mode)
           (end-of-buffer)
 
           ;; Activating markdown-mode
