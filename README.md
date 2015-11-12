@@ -1,9 +1,12 @@
 #Devilry-mode
 
 ##Om
-Devilry-mode gjør det enklere å rette obliger. Når du begynner å rette en oblig åpnes det automatisk en feedback-template, samt den forrige tilbakemeldingen til studenten hvis denne finnes. Dette gjør at man enkelt kan **se studentens utvilkling** og dermed gi **bedre tilbakemeldinger**. Deretter vises README.txt hvis den finnes og alle javafiler kompileres, eventuelle kompileringsfeil vises.
-Pluginen ble laget for java-programmering, men kan brukes for i alle fag! Deaktiver i såfall javakompilering, se "Deaktiver javakompilering" nedenfor under "Innstillinger".
+Devilry-mode gjør det enklere å rette obliger. Når du begynner å rette en oblig åpnes det automatisk en feedback-template (mal), samt den forrige tilbakemeldingen du ga studenten hvis det er aktuelt. Dette gjør at man enkelt kan **se studentens utvilkling** og dermed gi **bedre tilbakemeldinger**.
 
+Deretter vises README.txt hvis den finnes og alle javafiler kompileres, eventuelle kompileringsfeil vises.
+Plugin'en ble laget for javaprogrammering, men kan brukes for i alle fag! Deaktiver i såfall javakompilering, se "Deaktiver javakompilering" nedenfor under "Innstillinger".
+
+BILDE
 
 ##Installering
 - Clone repoet med git:
