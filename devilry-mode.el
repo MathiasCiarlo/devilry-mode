@@ -2,6 +2,7 @@
 
 ;; To tidy up a buffer, created by simenheg
 (defun tidy ()
+  (interactive)
   (let ((beg (if (region-active-p) (region-beginning) (point-min)))
         (end (if (region-active-p) (region-end) (point-max))))
     (indent-region beg end)
@@ -70,16 +71,12 @@
   ;; Ask until we get a valid username
   (setq username (dm-get-username))
   (while (not (yes-or-no-p (concat "Correcting \"" username "\" Is this a valid username?")))
-    (if dm-easy-file-system
-        (if (yes-or-no-p "The variable \"easy-file-system\" is currently \"t\""
-                         "but the files are not organized this way. Change to normal file mode?")
-            (progn
-              (setq dm-easy-file-system nil)
-              (read-string "File mode changed to normal. Consider to set the variable \""
-                           "easy-file-system to \"nil\" in devilry-mode.settings")
-              (setq username (dm-get-username)))
-          (setq username (read-string "Type the correct username: ")))
-      (setq username (read-string "Type the correct username: "))))
+    (when dm-easy-file-system
+      (message "The variable \"easy-file-system\" is currently \"t\""
+               "but the files are not organized this way.\n"
+               "Consider setting the variable \""
+               "easy-file-system to \"nil\" in devilry-mode.settings"))
+    (setq username (read-string "Type the correct username: ")))
 
   (while (not (file-exists-p (concat dm-feedback-dir-path username)))
     (if (yes-or-no-p (concat "Can't find directory \"" dm-feedback-dir-path username "\". Create it?"))
@@ -101,7 +98,8 @@
       (dolist (file (directory-files user-feedback-dir t))
         (unless (file-directory-p file)
           (find-file-read-only file)
-	  (visual-line-mode)))
+          (visual-line-mode)
+          (safe-markdown-mode)))
 
       ;; Create new feedback-file or open it if it exists
       (find-file newFilePath)
@@ -118,7 +116,7 @@
       (when (file-exists-p prevFilePath)
         (with-selected-window (split-window-below)
           (find-file prevFilePath)
-	  (visual-line-mode)
+          (visual-line-mode)
           (end-of-buffer)
 
           ;; Activating markdown-mode
@@ -140,21 +138,21 @@
         (with-current-buffer buf
           (shell-command "javac *.java")
 
-	  ;; Show eventual errors from compilation in window below
-	  (if (> (buffer-size (get-buffer "*Shell Command Output*")) 0)
-	      (let ((output-window (split-window-below)))
-		(message "Compilation gave errors.")
+          ;; Show eventual errors from compilation in window below
+          (if (> (buffer-size (get-buffer "*Shell Command Output*")) 0)
+              (let ((output-window (split-window-below)))
+                (message "Compilation gave errors.")
 
-		(with-selected-window output-window
-		  (pop-to-buffer-same-window "*Shell Command Output*")))
+                (with-selected-window output-window
+                  (pop-to-buffer-same-window "*Shell Command Output*")))
 
-	    ;; If compilation completed delete .class files
-	    (when dm-rm-class-files
-	      (message "Deleting class files.")
-	      (if (eq system-type 'windows-nt)
-		  (shell-command "del *.class")
-		(shell-command "rm *.class")))
-	    (message "Compilation completed sucessfully.")))
+            ;; If compilation completed delete .class files
+            (when dm-rm-class-files
+              (message "Deleting class files.")
+              (if (eq system-type 'windows-nt)
+                  (shell-command "del *.class")
+                (shell-command "rm *.class")))
+            (message "Compilation completed sucessfully.")))
         (return)))))
 
 
@@ -324,19 +322,19 @@
 
   ;; Support for windows backslash instead of slash.
   (let ((system-file-separator
-	 (if (eq system-type 'windows-nt)
-	     (string ?\\)
-	   "/")))
+         (if (eq system-type 'windows-nt)
+             (string ?\\)
+           "/")))
     (if dm-easy-file-system
-	(reverse-string
-	 (nth 1
-	      (split-string (reverse-string (buffer-file-name)) system-file-separator)))
+        (reverse-string
+         (nth 1
+              (split-string (reverse-string (buffer-file-name)) system-file-separator)))
       (car
        (split-string
-	(reverse-string
-	 (nth 3
-	      (split-string
-	       (reverse-string (buffer-file-name))  system-file-separator))) " ")))))
+        (reverse-string
+         (nth 3
+              (split-string
+               (reverse-string (buffer-file-name))  system-file-separator))) " ")))))
 
 ;; The mode
 (define-minor-mode devilry-mode
