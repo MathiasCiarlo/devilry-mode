@@ -20,10 +20,8 @@
 ;; Yank inside devilry-markdown code block
 (defun dm-yank-java-block()
   (interactive)
-  (insert "``` java")
-  (newline)(yank)(newline)
-  (insert "```")(newline))
-
+  (let ((src (current-kill 0)))
+    (insert (concat "```java\n" src "\n```\n"))))
 
 ;; Activating markdown-mode if installed
 (defun safe-markdown-mode()
