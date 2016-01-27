@@ -307,14 +307,6 @@
    'string
    (reverse (string-to-list str))))
 
-
-;; Get rest of list from position n
-(defun sublist (cnt lst)
-  (cond ((null lst) '())
-        ((< cnt 1) lst)
-        (t (sublist (- cnt 1) (cdr lst)))))
-
-
 ;; Fetches username from the path of the current buffer file.
 (defun dm-get-username ()
 
