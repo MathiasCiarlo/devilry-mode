@@ -44,11 +44,11 @@
 ;; Shows readme buffer if it exists
 ;; This is kind of horrible
 (defun dm-show-readme()
-  (dolist (buf (buffer-list))
-    (when (string= (downcase (buffer-name buf)) "readme.txt")
-      (switch-to-buffer buf)
-      (return))))
-
+  (mapc (lambda (buf)
+          (when (eq (string-match "readme" (buffer-name buf)) 0)
+            (switch-to-buffer buf)
+            (read-only-mode)))
+        (buffer-list)))
 
 ;; Inserts the template and adds username et end of first line
 (defun dm-insert-template (username file-path)
