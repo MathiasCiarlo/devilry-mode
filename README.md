@@ -28,7 +28,7 @@ Hvis du får feilmeldig ved oppstart, kontroller at "devilry-mode.el" ligger i r
 Eksempel: `"~/grl/inf1000/h15/feedback/"`.
 - Skriv så inn path til en feedback-template, dette er en tekstfil som alle tilbakemeldingene vil bruke som mal.
 - Åpne obligfilene til den første studenten. Det mest effektive er å dra filene over i emacs med musa. Du kan også bruke find-file (C-x C-f) og åpne en hel mappe på en gang (ved å avsluttte med stjerne).
-- Trykk `f5` (eller `M-x devilry-do-oblig`)
+- Trykk `f5` (eller `M-x dm-do-oblig`)
 - Rett obligen!
 - `f6` lukker alt du har åpent uten å lagre det, bruk dette før du starter på neste oblig.
 - Gjenta.
@@ -41,13 +41,13 @@ Programmet bruker en fil "devilry-mode.settings" for å lagre data fra forrige �
 Alle innstillinger ligger i filen **devilry-mode.settings** som opprettes samme sted som du installerte devilry-mode første gang du starter Devilry-mode.
 
 ###Annet mappesystem enn standard devilry-nedlasting (Anbefales!)
-[Gard Inge Rosvold](https://github.com/gardir) har laget et [pythonscript](https://github.com/gardir/Devilry_sort) som organiserer mappene lastet ned fra Devilry veldig fint, hvis du har organisert filene slik, må du sette sette variabelen `easy-file-system t`.
+[Gard Inge Rosvold](https://github.com/gardir) har laget et [pythonscript](https://github.com/gardir/Devilry_sort) som organiserer mappene lastet ned fra Devilry veldig fint, hvis du har organisert filene slik, må du sette sette variabelen `dm-easy-file-system t`.
 
 ###Deaktivering av javakompilering
-Sett variabelen `devilry-java-compilation nil`.
+Sett variabelen `dm-java-compilation nil`.
 
 ###Automatisk indentering
-Det er inkludert funksjonalietet for å automatisk indentere all kode riktig når man begynner å rette en ny oblig, men dette anbefales ikke alltid, ettersom studentene trenger trening i å indentere riktig. For å legge til funksjonen: Sett variabelen `automatic-indentation t`.
+Det er inkludert funksjonalietet for å automatisk indentere all kode riktig når man begynner å rette en ny oblig, men dette anbefales ikke alltid, ettersom studentene trenger trening i å indentere riktig. For å legge til funksjonen: Sett variabelen `dm-auto-indentation t`.
 
 ###Automatisk sletting av .class-filer
-Sett variabelen `rm-output-files t`
+Sett variabelen `dm-rm-class-files t`
