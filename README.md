@@ -1,6 +1,4 @@
-#Devilry-mode
-
-##Om
+# Devilry-mode
 Devilry-mode gjør det enklere å rette obliger. Når du begynner å rette en oblig åpnes det automatisk en feedback-template (mal), samt den forrige tilbakemeldingen du ga studenten hvis det er aktuelt. Dette gjør at man enkelt kan **se studentens utvilkling** og dermed gi **bedre tilbakemeldinger**.
 
 Deretter vises README.txt hvis den finnes og alle javafiler kompileres, eventuelle kompileringsfeil vises.
@@ -8,7 +6,7 @@ Plugin'en ble laget for javaprogrammering, men kan brukes for i alle fag! Deakti
 
 BILDE
 
-##Installering
+## Installering
 - Clone repoet med git:
 `git clone git@github.com:MathiasCiarlo/devilry-mode.git ~/.emacs.d/plugins/devilry-mode`
 
@@ -22,7 +20,7 @@ BILDE
 Hvis du får feilmeldig ved oppstart, kontroller at "devilry-mode.el" ligger i riktig mappe.
 
 
-##Enkel bruk
+## Enkel bruk
 - Kjør funksjonen devilry-mode `M-x devilry-mode` (alt-x) for å aktivere modusen. Scriptet vil prøve å finne filen "devilry-mode.settings" (data fra tidligere økter) og eventuelt opprette den hvis den ikke finnes.
 - Første gangen du bruker devilry-mode må du skrive inn pathen til et feedback-directory. Her lagres alle tilbakemeldingene dine. Skriv inn pathen.
 Eksempel: `"~/grl/inf1000/h15/feedback/"`.
@@ -33,21 +31,21 @@ Eksempel: `"~/grl/inf1000/h15/feedback/"`.
 - `f6` lukker alt du har åpent uten å lagre det, bruk dette før du starter på neste oblig.
 - Gjenta.
 
-##Virkemåte
+## Virkemåte
 Devilry-mode bruker en feedbackmappe som inneholder én mappe for hver student. Hver gang man gir en tilbakemeldig, blir denne lagret i riktig mappe under navnet "<oblignummer>.txt".
 Programmet bruker en fil "devilry-mode.settings" for å lagre data fra forrige økt. Denne inneholder path til feedbackmappen, path til feedback-templaten og hviket oblignummer man er på. Hvis denne ikke finnes blir den opprettet ved oppstart av modusen.
 
-##Innstillinger
+## Innstillinger
 Alle innstillinger ligger i filen **devilry-mode.settings** som opprettes samme sted som du installerte devilry-mode første gang du starter Devilry-mode.
 
-###Annet mappesystem enn standard devilry-nedlasting (Anbefales!)
+### Annet mappesystem enn standard devilry-nedlasting (Anbefales!)
 [Gard Inge Rosvold](https://github.com/gardir) har laget et [pythonscript](https://github.com/gardir/Devilry_sort) som organiserer mappene lastet ned fra Devilry veldig fint, hvis du har organisert filene slik, må du sette sette variabelen `dm-easy-file-system t`.
 
-###Deaktivering av javakompilering
+### Deaktivering av javakompilering
 Sett variabelen `dm-java-compilation nil`.
 
-###Automatisk indentering
+### Automatisk indentering
 Det er inkludert funksjonalietet for å automatisk indentere all kode riktig når man begynner å rette en ny oblig, men dette anbefales ikke alltid, ettersom studentene trenger trening i å indentere riktig. For å legge til funksjonen: Sett variabelen `dm-auto-indentation t`.
 
-###Automatisk sletting av .class-filer
+### Automatisk sletting av .class-filer
 Sett variabelen `dm-rm-class-files t`
